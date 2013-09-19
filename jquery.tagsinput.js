@@ -251,28 +251,29 @@
 					$(event.data.fake_input).css('color','#000000');		
 				});
 						
-				if (settings.autocomplete_url != undefined) {
-					autocomplete_options = {source: settings.autocomplete_url};
-					for (attrname in settings.autocomplete) { 
+				if (settings.autocomplete_url != undefined || settings.autocomplete != undefined) {
+					var autocomplete_options = {},
+							addTagSettings = {focus: true, unique: settings.unique};
+
+					if (settings.autocomplete_url != undefined)
+						autocomplete_options.source = settings.autocomplete_url
+
+					for (attrname in settings.autocomplete) 
 						autocomplete_options[attrname] = settings.autocomplete[attrname]; 
-					}
 				
 					if (jQuery.Autocompleter !== undefined) {
-						$(data.fake_input).autocomplete(settings.autocomplete_url, settings.autocomplete);
-						$(data.fake_input).bind('result',data,function(event,data,formatted) {
-							if (data) {
-								$('#'+id).addTag(data[0] + "",{focus:true,unique:(settings.unique)});
-							}
-					  	});
+						$(data.fake_input).autocomplete(autocomplete_options.source, settings.autocomplete);
+						$(data.fake_input).bind('result', data, function(event, data, formatted) {
+							if (data) 
+								$('#' + id).addTag(data[0] + "", addTagSettings);
+						});
 					} else if (jQuery.ui.autocomplete !== undefined) {
 						$(data.fake_input).autocomplete(autocomplete_options);
-						$(data.fake_input).bind('autocompleteselect',data,function(event,ui) {
-							$(event.data.real_input).addTag(ui.item.value,{focus:true,unique:(settings.unique)});
+						$(data.fake_input).bind('autocompleteselect', data, function(event, ui) {
+							$(event.data.real_input).addTag(ui.item.value, addTagSettings);
 							return false;
 						});
 					}
-				
-					
 				} else {
 						// if a user tabs out of the field, create a new tag
 						// this is only available if autocomplete is not used.
@@ -289,6 +290,7 @@
 						});
 				
 				}
+
 				// if user types a comma, create a new tag
 				$(data.fake_input).bind('keypress',data,function(event) {
 					if (event.which==event.data.delimiter.charCodeAt(0) || event.which==13 ) {
@@ -302,11 +304,10 @@
             
           			}
 				});
+
 				//Delete last tag on backspace
-				data.removeWithBackspace && $(data.fake_input).bind('keydown', function(event)
-				{
-					if(event.keyCode == 8 && $(this).val() == '')
-					{
+				data.removeWithBackspace && $(data.fake_input).bind('keydown', function(event) {
+					if(event.keyCode == 8 && $(this).val() == '') {
 						 event.preventDefault();
 						 var last_tag = $(this).closest('.tagsinput').find('.tag:last').text();
 						 var id = $(this).attr('id').replace(/_tag$/, '');
