@@ -251,7 +251,7 @@
 					$(event.data.fake_input).css('color','#000000');		
 				});
 						
-				if (settings.autocomplete_url != undefined || settings.autocomplete != undefined) {
+				if (settings.autocomplete_url != undefined || options.autocomplete != undefined) {
 					var autocomplete_options = {},
 							addTagSettings = {focus: true, unique: settings.unique};
 
